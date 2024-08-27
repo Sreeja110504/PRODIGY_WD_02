@@ -1,0 +1,183 @@
+<!-- HTML CODE -->
+<!DOCTYPE html>
+<html lang="en">
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stopwatch</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="stopwatch-container"> 
+        <h1 id="stopwatch">00:00:00</h1>
+        <button id="start-button" class="button">Start</button>
+        <button id="stop-button" class="button" disabled>Stop</button>
+        <button id="reset-button" class="button" disabled>Reset</button>
+        <button id="lap-button" class="button" disabled>Lap-Time</button>
+        <div id="lap-times"></div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
+
+/* <!-- CSS CODE --> */
+ body {
+    font-family: Arial, sans-serif;
+    background-image: url(watch.jpeg);
+    background-size:cover;
+    opacity: 0.8;
+}
+
+
+.stopwatch-container {
+    margin:250px 450px;
+    width:300px; 
+    border: 25px solid black;
+    text-align: center;
+    background-image: url(stopwatch.jpeg);
+    background-size: contain;
+    background-repeat: none;
+    position:relative;
+    border-top:25px solid blue;
+    border-bottom: 25px solid blue;
+}
+
+h1 {
+    font-size: 50px;
+    color:green;
+}
+
+.button {
+    margin:23px 23px;
+    background-color: red;
+    color: #fff;
+    font-size: 25px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0,0,0,0.5);
+    cursor: pointer;
+}
+
+.button:hover {
+    background-color: #3e8e41;
+}
+
+.button[disabled] {
+    background-color: #999;
+    cursor: not-allowed;
+} 
+
+button#lap-button {
+    background-color: blue;
+    color: white;
+  }
+  
+  button#lap-button[disabled]{
+    background-color: #999;
+    cursor: not-allowed;
+    box-shadow: 0px 0px 10px rgba(0,0,0,0.5);
+  }
+
+  button#lap-button[disabled]:hover{
+    background-color: #999;
+    cursor: not-allowed;
+    box-shadow: 0px 0px 10px rgba(0,0,0,0.5);
+  }
+
+  button#lap-button:hover {
+    background-color:pink;
+  }
+#lap-times {
+    font-size: 16px;
+    font-family: Arial, sans-serif;
+    font-style: bold;
+    font-weight: 900;
+    border: 1px solid #ccc;
+    position:relative;
+    border-radius: 5px;
+    width: 300px;
+    height: 200px;
+    overflow-y: auto;
+  }
+  
+  #lap-times::-webkit-scrollbar {
+    width: 10px;
+  }
+  
+  #lap-times::-webkit-scrollbar-thumb {
+    background-color: darkgoldenrod
+  }
+
+  .lap-time {
+    background-color: lightpink;
+    padding: 10px;
+    border-bottom: 2px solid deeppink;
+    border-top: 2px solid deeppink;
+  }
+  
+  .lap-time:last-child {
+    border-bottom: none;
+}
+
+// <!-- JS CODE -->
+let startTime = 0;
+let stopTime = 0;
+let elapsed = 0;
+let timerId = null;
+let lapTimes = [];
+
+function startStopwatch() {
+    startTime = new Date().getTime();
+    clearInterval(timerId);
+    timerId = setInterval(updateTimer, 10);
+    document.getElementById("start-button").disabled = true;
+    document.getElementById("stop-button").disabled = false;
+    document.getElementById("reset-button").disabled = false;
+    document.getElementById("lap-button").disabled = false;
+}
+
+function stopStopwatch() {
+    stopTime = new Date().getTime();
+    clearInterval(timerId);
+    document.getElementById("start-button").disabled = false;
+    document.getElementById("stop-button").disabled = true;
+    document.getElementById("lap-button").disabled = true;
+}
+
+function resetStopwatch() {
+    elapsed = 0;
+    document.getElementById("stopwatch").innerHTML = "00:00:00";
+    startTime = 0;
+    stopTime = 0;
+    clearInterval(timerId);
+    document.getElementById("start-button").disabled = false;
+    document.getElementById("stop-button").disabled = true;
+    document.getElementById("reset-button").disabled = true;
+    document.getElementById("lap-button").disabled = true;
+    document.getElementById("lap-times").innerHTML = "";
+}
+
+function updateTimer() {
+    elapsed = (new Date().getTime() - startTime) / 1000;
+    const hours = Math.floor(elapsed / 3600);
+    const minutes = Math.floor((elapsed % 3600) / 60);
+    const seconds = Math.floor(elapsed % 60);
+    document.getElementById("stopwatch").innerHTML = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+}
+
+function getLapTime() {
+    const lapTimeElapsed = (new Date().getTime() - startTime) / 1000;
+    const lapHours = Math.floor(lapTimeElapsed / 3600);
+    const lapMinutes = Math.floor((lapTimeElapsed % 3600) / 60);
+    const lapSeconds = Math.floor(lapTimeElapsed % 60);
+    lapTimes.push(` ${lapHours.toString().padStart(2, '0')}:${lapMinutes.toString().padStart(2, '0')}:${lapSeconds.toString().padStart(2, '0')}`);
+    // document.getElementById("lap-times").innerHTML += `${lapTimes.length} - ${lapHours.toString().padStart(2, '0')}:${lapMinutes.toString().padStart(2, '0')}:${lapSeconds.toString().padStart(2, '0')}<br>`;
+    document.getElementById("lap-times").innerHTML += `<div class="lap-time">${lapHours.toString().padStart(2, '0')}:${lapMinutes.toString().padStart(2, '0')}:${lapSeconds.toString().padStart(2, '0')}<br></div>`;
+}
+
+document.getElementById("start-button").addEventListener("click", startStopwatch);
+document.getElementById("stop-button").addEventListener("click", stopStopwatch);
+document.getElementById("reset-button").addEventListener("click", resetStopwatch);
+document.getElementById("lap-button").addEventListener("click", getLapTime);
